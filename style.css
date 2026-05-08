@@ -1,0 +1,548 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Orbitron:wght@600;700;800&display=swap');
+
+
+/* ================================================== */
+/* RESET */
+/* ================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+
+/* ================================================== */
+/* VARIÁVEIS */
+/* ================================================== */
+
+:root {
+
+    /* ESTRUTURA */
+    --radius: 2px;
+
+    /* ================================================== */
+    /* FONTES */
+    /* ================================================== */
+
+    --font-ui: 'Inter', sans-serif;
+
+    --font-title: 'Orbitron', sans-serif;
+
+
+
+    /* ================================================== */
+    /* TEXTO */
+    /* ================================================== */
+
+    /* TEXTO PRINCIPAL */
+    --color-text: #e7dede;
+
+    /* TEXTO ESCURO */
+    --color-text-dark: #222222;
+
+    /* TEXTO SECUNDÁRIO */
+    --color-text-soft: #b8aaaa;
+
+
+
+    /* ================================================== */
+    /* FUNDO */
+    /* ================================================== */
+
+    --color-bg: #120b16;
+
+
+
+    /* ================================================== */
+    /* PALETA VINHO */
+    /* ================================================== */
+
+    --color-wine-1: #722040;
+    --color-wine-2: #d3394c;
+    --color-wine-3: #af2d46;
+    --color-wine-4: #6a1c48;
+    --color-wine-5: #8b2444;
+
+
+
+    /* ================================================== */
+    /* BOTÃO */
+    /* ================================================== */
+
+    --color-success: #00b894;
+    --color-success-hover: #00c9a0;
+
+    /* TEXTO DO BOTÃO */
+    --color-button-text: #081c15;
+
+
+
+    /* ================================================== */
+    /* INTERAÇÃO */
+    /* ================================================== */
+
+    --border-color-focus: var(--color-wine-2);
+
+
+
+    /* ================================================== */
+    /* GRID / GLOW */
+    /* ================================================== */
+
+    --color-grid: rgba(211, 57, 76, 0.035);
+
+    --color-glow-top:
+        rgba(114, 32, 64, 0.26);
+
+    --color-glow-bottom:
+        rgba(106, 28, 72, 0.24);
+
+    --color-glow-center:
+        rgba(211, 57, 76, 0.08);
+
+
+
+    /* ================================================== */
+    /* INPUT */
+    /* ================================================== */
+
+    --color-input-bg: #1b1521;
+
+    --color-input-border:
+        rgba(255, 255, 255, 0.08);
+
+    --color-input-text:
+        var(--color-text);
+
+    --color-input-placeholder:
+        rgba(255, 255, 255, 0.35);
+
+
+
+    /* ================================================== */
+    /* CONSOLE */
+    /* ================================================== */
+
+    --color-console-bg: #111111;
+
+
+
+    /* ================================================== */
+    /* TABULEIRO */
+    /* ================================================== */
+
+    --color-cell-bg: #221828;
+
+    --color-cell-hover: #2c1f34;
+
+    --color-cell-border:
+        rgba(255, 255, 255, 0.08);
+
+    --color-cell-text:
+        var(--color-text);
+
+
+
+    /* ================================================== */
+    /* SOMBRAS */
+    /* ================================================== */
+
+    --shadow-soft:
+        0 8px 18px rgba(0, 0, 0, 0.18);
+
+    --shadow-focus:
+        0 0 12px rgba(211, 57, 76, 0.18);
+}
+
+
+
+/* ================================================== */
+/* BODY */
+/* ================================================== */
+
+body {
+
+    min-height: 100vh;
+    padding: 20px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+
+    font-family: var(--font-ui);
+
+    color: var(--color-text);
+
+    background-color: var(--color-bg);
+
+    background-image:
+
+        linear-gradient(var(--color-grid) 1px,
+            transparent 1px),
+
+        linear-gradient(90deg,
+            var(--color-grid) 1px,
+            transparent 1px),
+
+        radial-gradient(circle at top left,
+            var(--color-glow-top),
+            transparent 35%),
+
+        radial-gradient(circle at bottom right,
+            var(--color-glow-bottom),
+            transparent 40%),
+
+        radial-gradient(circle at center,
+            var(--color-glow-center),
+            transparent 55%);
+
+    background-size:
+        30px 30px,
+        30px 30px,
+        auto,
+        auto,
+        auto;
+}
+
+
+
+/* ================================================== */
+/* CONTAINER */
+/* ================================================== */
+
+.container {
+
+    width: 100%;
+    max-width: 900px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+}
+
+
+
+/* ================================================== */
+/* FORMULÁRIO */
+/* ================================================== */
+
+.formulario {
+
+    width: 100%;
+    max-width: 320px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+
+/* TÍTULO */
+
+.formulario h1 {
+
+    margin-bottom: 10px;
+
+    text-align: center;
+
+    font-size: 2rem;
+
+    color: #ffffff;
+
+    font-family: var(--font-title);
+
+    text-transform: uppercase;
+
+    letter-spacing: 2px;
+
+    text-shadow:
+        0 0 8px rgba(211,57,76,0.35);
+}
+
+
+
+/* ================================================== */
+/* INPUT */
+/* ================================================== */
+
+.formulario input {
+
+    height: 45px;
+    padding: 0 12px;
+
+    outline: none;
+
+    border:
+        1px solid var(--color-input-border);
+
+    border-radius: var(--radius);
+
+    background: var(--color-input-bg);
+
+    color: var(--color-input-text);
+
+    font-size: 1rem;
+
+    transition: 0.18s ease;
+}
+
+
+
+.formulario input::placeholder {
+
+    color:
+        var(--color-input-placeholder);
+}
+
+
+
+.formulario input:focus {
+
+    border-color:
+        var(--border-color-focus);
+
+    box-shadow:
+        var(--shadow-focus);
+}
+
+
+
+/* ================================================== */
+/* BOTÃO */
+/* ================================================== */
+
+.formulario button {
+
+    height: 48px;
+
+    cursor: pointer;
+
+    border: 1px solid transparent;
+
+    border-radius: var(--radius);
+
+    background: var(--color-success);
+
+    color: var(--color-button-text);
+
+    font-size: 1rem;
+    font-weight: bold;
+
+    transition: 0.15s ease;
+}
+
+
+
+.formulario button:hover {
+
+    transform: translateY(-2px);
+
+    background:
+        var(--color-success-hover);
+
+    box-shadow:
+        var(--shadow-soft);
+}
+
+
+
+.formulario button:active {
+
+    transform: translateY(1px);
+
+    border-color:
+        var(--border-color-focus);
+}
+
+
+
+/* ================================================== */
+/* CONSOLE */
+/* ================================================== */
+
+.painel {
+    margin-top: 10px;
+}
+
+
+
+#console {
+
+    width: 100%;
+    min-height: 50px;
+    padding: 12px;
+
+    display: flex;
+    align-items: center;
+
+    background:
+        var(--color-console-bg);
+
+    border:
+        1px solid var(--border-color-focus);
+
+    border-radius:
+        var(--radius);
+
+    color:
+        var(--color-text-soft);
+
+    font-size: 0.95rem;
+    font-weight: bold;
+
+    box-shadow:
+        var(--shadow-soft);
+}
+
+
+
+/* ================================================== */
+/* TABULEIRO */
+/* ================================================== */
+
+.tabuleiro {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 110px);
+
+    grid-template-rows:
+        repeat(3, 110px);
+
+    gap: 8px;
+}
+
+
+
+/* ================================================== */
+/* CASA */
+/* ================================================== */
+
+.casa {
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+
+    background:
+        var(--color-cell-bg);
+
+    color:
+        var(--color-cell-text);
+
+    border:
+        1px solid var(--color-cell-border);
+
+    border-radius:
+        var(--radius);
+
+    font-size: 2.5rem;
+    font-weight: bold;
+
+    transition: 0.1s ease;
+}
+
+
+
+.casa:hover {
+
+    transform: scale(1.03);
+
+    background:
+        var(--color-cell-hover);
+
+    border-color:
+        var(--border-color-focus);
+
+    box-shadow:
+        var(--shadow-soft);
+}
+
+
+
+.casa:active {
+
+    transform: scale(0.98);
+}
+
+
+.casa.vencedora {
+
+    background: var(--color-success);
+
+    color: var(--color-button-text);
+
+    border-color: var(--color-success-hover);
+
+    outline: 2px solid var(--color-success-hover);
+
+    outline-offset: 3px;
+
+    box-shadow:
+        0 0 12px rgba(0, 184, 148, 0.35);
+}
+
+
+
+/* ================================================== */
+/* RESPONSIVO */
+/* ================================================== */
+
+@media (max-width: 768px) {
+
+    .container {
+
+        flex-direction: column;
+
+        gap: 30px;
+    }
+
+    .tabuleiro {
+
+        grid-template-columns:
+            repeat(3, 90px);
+
+        grid-template-rows:
+            repeat(3, 90px);
+    }
+
+    .casa {
+
+        font-size: 2rem;
+    }
+}
+
+
+
+@media (max-width: 480px) {
+
+    .tabuleiro {
+
+        grid-template-columns:
+            repeat(3, 75px);
+
+        grid-template-rows:
+            repeat(3, 75px);
+
+        gap: 6px;
+    }
+
+    .casa {
+
+        font-size: 1.8rem;
+    }
+
+    .formulario h1 {
+
+        font-size: 1.6rem;
+    }
+}

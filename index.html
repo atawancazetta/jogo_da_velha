@@ -12,46 +12,88 @@
 
 
 
-    <!-- CONTAINER PRINCIPAL -->
-    <main class="container">
-
-
-
-        <!-- PAINEL LATERAL -->
-        <section class="formulario">
-            <h1>Jogo da Velha</h1>
-            <input type="text" id="player1" placeholder="Digite o nome do jogador X">
-            <input type="text" id="player2" placeholder="Digite o nome do jogador O">
-            <button id="btnIniciar">
-                Iniciar
-            </button>
-            <div class="painel">
-                <div id="console">
-                    Aguardando jogadores...
-                </div>
+    <div id="app">
+        <!-- TELA DE LOGIN -->
+        <section id="tela-login" class="screen">
+            <div class="formulario">
+                <h1>Login</h1>
+                <input type="text" id="login-user" placeholder="Usuário">
+                <input type="password" id="login-pass" placeholder="Senha">
+                <button id="btnLogar">Entrar</button>
+                <div class="painel"><div id="console-login">Bem-vindo!</div></div>
             </div>
         </section>
 
+        <!-- MENU PRINCIPAL -->
+        <section id="tela-menu" class="screen hidden">
+            <div class="formulario">
+                <h1>Menu</h1>
+                
+                <div class="grupo-opcao">
+                    <label>Modo de Jogo:</label>
+                    <select id="select-modo">
+                        <option value="pvp">Jogador vs Jogador</option>
+                        <option value="pve">Jogador vs IA</option>
+                    </select>
+                </div>
 
-        <section class="tabuleiro">
+                <div id="config-ia" class="hidden">
+                    <div class="grupo-opcao">
+                        <label>Dificuldade:</label>
+                        <select id="select-dificuldade">
+                            <option value="facil">Fácil</option>
+                            <option value="medio">Médio</option>
+                            <option value="dificil">Difícil (Minimax)</option>
+                        </select>
+                    </div>
+                    <div class="grupo-opcao">
+                        <label>Jogar como:</label>
+                        <select id="select-simbolo">
+                            <option value="X">X (Começa)</option>
+                            <option value="O">O</option>
+                        </select>
+                    </div>
+                </div>
 
-            <div class="casa"></div>
-            <div class="casa"></div>
-            <div class="casa"></div>
+                <div id="nomes-jogadores">
+                    <input type="text" id="player1" placeholder="Nome do Jogador 1">
+                    <input type="text" id="player2" placeholder="Nome do Jogador 2">
+                </div>
 
-            <div class="casa"></div>
-            <div class="casa"></div>
-            <div class="casa"></div>
-
-            <div class="casa"></div>
-            <div class="casa"></div>
-            <div class="casa"></div>
-
+                <button id="btnIrParaJogo">Iniciar Partida</button>
+            </div>
         </section>
 
+        <!-- TELA DO JOGO -->
+        <section id="tela-jogo" class="screen hidden">
+            <main class="container">
+                <section class="formulario">
+                    <h1>Partida</h1>
+                    <div class="info-partida">
+                        <p id="info-p1"></p>
+                        <p id="info-p2"></p>
+                    </div>
+                    <div class="painel">
+                        <div id="console">Aguardando...</div>
+                    </div>
+                    <button id="btnReiniciar">Reiniciar</button>
+                    <button id="btnVoltarMenu" class="btn-secundario">Menu</button>
+                </section>
 
-
-    </main>
+                <section class="tabuleiro">
+                    <div class="casa" data-index="0"></div>
+                    <div class="casa" data-index="1"></div>
+                    <div class="casa" data-index="2"></div>
+                    <div class="casa" data-index="3"></div>
+                    <div class="casa" data-index="4"></div>
+                    <div class="casa" data-index="5"></div>
+                    <div class="casa" data-index="6"></div>
+                    <div class="casa" data-index="7"></div>
+                    <div class="casa" data-index="8"></div>
+                </section>
+            </main>
+        </section>
+    </div>
 
     <script src="game.js"></script>
 

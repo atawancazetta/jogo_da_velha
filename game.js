@@ -1,38 +1,25 @@
-// ======================================================
-// ELEMENTOS DO DOM
-// ======================================================
+// Lógica central da campanha contra IA
 
+const boardCells = document.querySelectorAll('.casa');
+const statusDisplay = document.getElementById('console');
+const playerNameInput = document.getElementById('player1');
 
-
-const casas = document.querySelectorAll('.casa');
-const consoleGame = document.getElementById('console');
-const inputPlayer1 = document.getElementById('player1');
-const inputPlayer2 = document.getElementById('player2');
-
-// Elementos de Navegação e Telas
 const telaLogin = document.getElementById('tela-login');
-const telaMenu = document.getElementById('tela-menu');
 const telaJogo = document.getElementById('tela-jogo');
 
-// Botões e Seletores
 const btnLogar = document.getElementById('btnLogar');
-const btnIrParaJogo = document.getElementById('btnIrParaJogo');
-const btnReiniciar = document.getElementById('btnReiniciar');
+const btnStartGame = document.getElementById('btnIrParaJogo');
 const btnVoltarMenu = document.getElementById('btnVoltarMenu');
-const selectModo = document.getElementById('select-modo');
-const selectDificuldade = document.getElementById('select-dificuldade');
 const selectSimbolo = document.getElementById('select-simbolo');
-const configIA = document.getElementById('config-ia');
-const containerNomes = document.getElementById('nomes-jogadores');
 
-// ======================================================
-// CLASSE PRINCIPAL
-// ======================================================
-
-
+const modalFase = document.getElementById('modal-fase');
+const btnAcaoModal = document.getElementById('btnAcaoModal');
+const btnResetarCarreira = document.getElementById('btnResetarCarreira');
+const modalTitle = document.getElementById('modal-titulo');
+const modalMessage = document.getElementById('modal-mensagem');
+const modalAttempts = document.getElementById('modal-tentativas');
 
 class JogoDaVelha {
-
     constructor() {
         this.combinacoesVitoria = [
             [0, 1, 2], [3, 4, 5], [6, 7, 8],
@@ -44,129 +31,237 @@ class JogoDaVelha {
         this.jogoAtivo = false;
         this.jogador1 = '';
         this.jogador2 = '';
-        this.modo = 'pvp'; // pvp ou pve
-        this.dificuldade = 'facil';
+        this.tipoDesafio = 'progressao';
         this.simboloHumano = 'X';
 
+        this.vitoriasP1 = 0;
+        this.vitoriasP2 = 0;
+        this.empates = 0;
+
+        this.nivelCarreira = 0;
+        this.vitoriasIA = 0;
+        this.tentativas = 3;
+
+        this.carregarProgresso();
         this.iniciarEventos()
     }
 
-
-
-    // ======================================================
-    // EVENTOS
-    // ======================================================
-
-
-
+    /* Listeners de clique e botões do sistema */
     iniciarEventos() {
-        // Evento para cliques nas casas do tabuleiro
-        casas.forEach(casa => {
+        boardCells.forEach(casa => {
             casa.addEventListener('click', (evento) => {
                 this.marcarCasa(evento.target)
             })
         })
 
-        // Login Simples (Qualquer user/pass com mais de 3 letras)
         btnLogar.addEventListener('click', () => this.validarLogin());
-
-        // Troca de Modo no Menu (Esconde campos de nome se for contra IA)
-        selectModo.addEventListener('change', (e) => {
-            this.modo = e.target.value;
-            configIA.classList.toggle('hidden', this.modo === 'pvp');
-            containerNomes.classList.toggle('hidden', this.modo === 'pve');
-        });
-
-        // Iniciar Partida do Menu
-        btnIrParaJogo.addEventListener('click', () => this.iniciarPartida());
-
-        // Controles de tela de jogo
-        btnReiniciar.addEventListener('click', () => this.reiniciarPartida());
-        btnVoltarMenu.addEventListener('click', () => this.mudarTela(telaMenu));
+        btnStartGame.addEventListener('click', () => this.iniciarPartida());
+        btnVoltarMenu.addEventListener('click', () => location.reload());
+        btnAcaoModal.addEventListener('click', () => this.processarAcaoModal());
+        btnResetarCarreira.addEventListener('click', () => this.reiniciarCarreiraDoZero());
     }
 
     mudarTela(telaAlvo) {
-        [telaLogin, telaMenu, telaJogo].forEach(t => t.classList.add('hidden'));
+        [telaLogin, telaJogo].forEach(t => t.classList.add('hidden'));
         telaAlvo.classList.remove('hidden');
+        if(telaAlvo === telaJogo) telaAlvo.style.display = 'flex';
     }
 
+    /* Recupera os dados salvos do jogador */
+    carregarProgresso() {
+        const salvo = localStorage.getItem('jogodavelha_progresso');
+        if (salvo) {
+            const dados = JSON.parse(salvo);
+            this.nivelCarreira = dados.nivel || 0;
+            this.vitoriasIA = dados.vitorias || 0;
+            this.tentativas = dados.tentativas !== undefined ? dados.tentativas : 3;
+        }
+        this.atualizarInterfaceCarreira();
+    }
+
+    /* Grava o progresso atual no localStorage */
+    salvarProgresso() {
+        const dados = {
+            nivel: this.nivelCarreira,
+            vitorias: this.vitoriasIA,
+            tentativas: this.tentativas
+        };
+        localStorage.setItem('jogodavelha_progresso', JSON.stringify(dados));
+    }
+
+    /* Verifica se os dados de acesso são válidos */
     validarLogin() {
         const user = document.getElementById('login-user').value;
         const pass = document.getElementById('login-pass').value;
         
         if (user.length > 3 && pass.length > 3) {
             this.jogador1 = user;
-            this.mudarTela(telaMenu);
+            this.mudarTela(telaJogo);
         } else {
             document.getElementById('console-login').textContent = "Usuário/Senha muito curtos.";
         }
     }
 
-
-
-    // ======================================================
-    // BOTÃO INICIAR / REINICIAR
-    // ======================================================
-
-
-
+    /* Prepara o tabuleiro para uma nova partida */
     iniciarPartida() {
-        if (this.modo === 'pvp') {
-            this.jogador1 = inputPlayer1.value.trim() || "Jogador 1";
-            this.jogador2 = inputPlayer2.value.trim() || "Jogador 2";
-        } else {
-            this.dificuldade = selectDificuldade.value;
-            this.simboloHumano = selectSimbolo.value;
-            this.jogador2 = `IA (${this.dificuldade})`;
-        }
+        this.jogador1 = playerNameInput.value.trim() || this.jogador1 || "Jogador";
+        this.simboloHumano = selectSimbolo.value;
 
-        // Atualiza legenda de quem é quem
-        document.getElementById('info-p1').textContent = `X: ${this.simboloHumano === 'X' ? this.jogador1 : this.jogador2}`;
-        document.getElementById('info-p2').textContent = `O: ${this.simboloHumano === 'O' ? this.jogador1 : this.jogador2}`;
+        const niveis = ['facil', 'medio', 'dificil'];
+        this.dificuldade = niveis[this.nivelCarreira];
 
-        this.limparTabuleiro()
+        this.atualizarInterfaceCarreira();
+        this.jogador2 = `IA (${this.dificuldade.toUpperCase()})`;
+
+        this.atualizarLabelsPlacar();
+        this.limparTabuleiro();
+        
         this.turno = 'X';
         this.jogoAtivo = true;
         this.mudarTela(telaJogo);
         this.mostrarTurnoAtual();
 
-        // Se a IA for X, ela faz a primeira jogada
-        if (this.modo === 'pve' && this.simboloHumano === 'O') {
+        if (this.simboloHumano === 'O') {
             this.fazerJogadaIA();
         }
     }
 
-    // ======================================================
-    // LÓGICA DA IA
-    // ======================================================
+    atualizarLabelsPlacar() {
+        document.getElementById('label-p1').textContent = this.jogador1;
+        document.getElementById('label-p2').textContent = this.jogador2;
+        document.getElementById('score-p1').textContent = this.vitoriasP1;
+        document.getElementById('score-p2').textContent = this.vitoriasP2;
+        document.getElementById('score-empate').textContent = this.empates;
+    }
 
+    /* Sincroniza visualmente os níveis e as vidas */
+    atualizarInterfaceCarreira() {
+        const badges = ['badge-facil', 'badge-medio', 'badge-dificil'];
+        badges.forEach((id, index) => {
+            const el = document.getElementById(id);
+            el.classList.remove('bloqueado', 'atual');
+            if (index > this.nivelCarreira) el.classList.add('bloqueado');
+            if (index === this.nivelCarreira) el.classList.add('atual');
+        });
+
+        const vidasIndicator = document.getElementById('vidas-indicator');
+        vidasIndicator.innerHTML = '';
+        for (let i = 0; i < 3; i++) {
+            const span = document.createElement('span');
+            span.className = i < this.tentativas ? 'coracao' : 'coracao perdido';
+            span.textContent = '❤️';
+            vidasIndicator.appendChild(span);
+        }
+
+        const stats = document.getElementById('stats-carreira');
+        const descNivel = ['Fácil', 'Médio', 'Difícil'][this.nivelCarreira];
+        stats.textContent = `Fase ${this.nivelCarreira + 1}: ${descNivel} | Vitórias IA: ${this.vitoriasIA}`;
+    }
+
+    /* Controla o modal de fim de jogo */
+    mostrarModal(tipo) {
+        const niveis = ['Fácil', 'Médio', 'Difícil'];
+        const progressoContainer = document.getElementById('modal-progresso-container');
+        const modalContent = document.querySelector('.modal-content');
+        
+        modalFase.classList.remove('hidden');
+        modalContent.classList.remove('derrota');
+        btnResetarCarreira.classList.add('hidden');
+        modalAttempts.textContent = '';
+        
+        if (tipo === 'vitoria') {
+            document.getElementById('modal-icon').textContent = '🏆';
+            modalTitle.textContent = 'Fase Concluída!';
+            modalMessage.textContent = `Você superou o nível ${niveis[this.nivelCarreira]}.`;
+            
+            if (this.nivelCarreira < 2) {
+                progressoContainer.style.display = 'flex';
+                document.getElementById('fase-anterior').textContent = `Fase ${this.nivelCarreira + 1}`;
+                document.getElementById('fase-proxima').textContent = `Fase ${this.nivelCarreira + 2}`;
+                btnAcaoModal.textContent = 'Próxima Fase';
+            } else {
+                progressoContainer.style.display = 'none';
+                modalTitle.textContent = 'Campanha Concluída!';
+                modalMessage.textContent = 'Parabéns! Você zerou o modo IA e se tornou um mestre!';
+                btnAcaoModal.textContent = 'Reiniciar Campanha';
+            }
+        } else if (tipo === 'derrota' || tipo === 'empate') {
+            modalContent.classList.add('derrota');
+            progressoContainer.style.display = 'none';
+            
+            if (this.tentativas > 0) {
+                document.getElementById('modal-icon').textContent = tipo === 'derrota' ? '💀' : '🤝';
+                modalTitle.textContent = tipo === 'derrota' ? 'Você Perdeu!' : 'Empate!';
+                modalMessage.textContent = tipo === 'derrota' ? 'A IA foi melhor nesta rodada.' : 'Foi por pouco!';
+                modalAttempts.textContent = `Tentativas restantes: ${this.tentativas}/3`;
+                btnAcaoModal.textContent = 'Tentar Novamente';
+                btnResetarCarreira.classList.remove('hidden');
+            } else {
+                document.getElementById('modal-icon').textContent = '👻';
+                modalTitle.textContent = 'GAME OVER';
+                modalMessage.textContent = 'Suas tentativas acabaram! Seu progresso foi resetado.';
+                btnAcaoModal.textContent = 'Reiniciar Campanha';
+            }
+        }
+    }
+
+    /* Reseta toda a campanha após confirmação */
+    reiniciarCarreiraDoZero() {
+        if (confirm("Isso apagará seu progresso e voltará para a Fase 1. Tem certeza?")) {
+            modalFase.classList.add('hidden');
+            this.nivelCarreira = 0;
+            this.vitoriasIA = 0;
+            this.vitoriasP1 = 0;
+            this.vitoriasP2 = 0;
+            this.empates = 0;
+            this.tentativas = 3;
+            this.salvarProgresso();
+            this.iniciarPartida();
+        }
+    }
+
+    /* Lógica dos botões dentro do modal */
+    processarAcaoModal() {
+        modalFase.classList.add('hidden');
+        
+        if (btnAcaoModal.textContent === 'Próxima Fase') {
+            this.nivelCarreira++;
+            this.tentativas = 3;
+            this.salvarProgresso();
+            this.iniciarPartida();
+        } else if (btnAcaoModal.textContent === 'Reiniciar Campanha') {
+            this.nivelCarreira = 0; this.vitoriasIA = 0; this.tentativas = 3;
+            this.salvarProgresso();
+            this.iniciarPartida();
+        } else {
+            this.iniciarPartida();
+        }
+    }
+
+    /* Lógica de jogada da máquina conforme o nível */
     fazerJogadaIA() {
         if (!this.jogoAtivo) return;
         
         let index;
-        const casasLivres = [...casas].filter(c => c.textContent === '').map(c => parseInt(c.dataset.index));
+        const casasLivres = [...boardCells].filter(c => c.textContent === '').map(c => parseInt(c.dataset.index));
 
         if (this.dificuldade === 'facil') {
-            // Aleatório
             index = casasLivres[Math.floor(Math.random() * casasLivres.length)];
         } else if (this.dificuldade === 'medio') {
-            // Tenta vencer ou bloquear, senão aleatório
             index = this.buscarMelhorLance() ?? casasLivres[Math.floor(Math.random() * casasLivres.length)];
         } else {
-            // Difícil: Minimax
             index = this.minimax(this.getEstadoTabuleiro(), this.turno).index;
         }
 
-        // Simula um pequeno delay para parecer que a IA está "pensando"
-        setTimeout(() => this.marcarCasa(casas[index]), 500);
+        setTimeout(() => this.marcarCasa(boardCells[index]), 500);
     }
 
+    /* Procura lances imediatos de vitória ou bloqueio */
     buscarMelhorLance() {
-        const simbolos = [this.turno, this.turno === 'X' ? 'O' : 'X']; // Eu primeiro, depois oponente
-        
+        const simbolos = [this.turno, this.turno === 'X' ? 'O' : 'X'];
         for (let s of simbolos) {
             for (let comb of this.combinacoesVitoria) {
-                const valores = comb.map(i => casas[i].textContent);
+                const valores = comb.map(i => boardCells[i].textContent);
                 if (valores.filter(v => v === s).length === 2 && valores.includes('')) {
                     return comb[valores.indexOf('')];
                 }
@@ -175,29 +270,9 @@ class JogoDaVelha {
         return null;
     }
 
-
-
     reiniciarPartida() {
-
-        this.limparTabuleiro()
-
-        this.turno = 'X'
-        this.jogoAtivo = true
-
-        this.mostrarTurnoAtual();
-        
-        if (this.modo === 'pve' && this.simboloHumano === 'O') {
-            this.fazerJogadaIA();
-        }
+        this.iniciarPartida();
     }
-
-
-
-    // ======================================================
-    // JOGADA
-    // ======================================================
-
-
 
     marcarCasa(casa) {
         if (!this.jogoAtivo) return
@@ -218,18 +293,14 @@ class JogoDaVelha {
         this.alternarTurno()
         this.mostrarTurnoAtual();
 
-        // Se for a vez da IA
-        if (this.jogoAtivo && this.modo === 'pve' && this.turno !== this.simboloHumano) {
+        if (this.jogoAtivo && this.turno !== this.simboloHumano) {
             this.fazerJogadaIA();
         }
     }
 
-    // ======================================================
-    // MINIMAX
-    // ======================================================
-
+    // Algoritmo Minimax para dificuldade Imbatível
     getEstadoTabuleiro() {
-        return [...casas].map(c => c.textContent);
+        return [...boardCells].map(c => c.textContent);
     }
 
     minimax(novoTabuleiro, player) {
@@ -270,142 +341,87 @@ class JogoDaVelha {
         return this.combinacoesVitoria.some(c => c.every(i => tab[i] === p));
     }
 
-    // ======================================================
-    // REGRAS
-    // ======================================================
-
+    /* Validações de fim de jogo */
     existeVencedor() {
-
         for (let combinacao of this.combinacoesVitoria) {
-
             const [a, b, c] = combinacao
-
-            const valorA = casas[a].textContent
-            const valorB = casas[b].textContent
-            const valorC = casas[c].textContent
+            const valorA = boardCells[a].textContent
+            const valorB = boardCells[b].textContent
+            const valorC = boardCells[c].textContent
 
             const venceu =
                 valorA !== '' &&
                 valorA === valorB &&
                 valorB === valorC
-
             if (venceu) {
-
                 this.destacarCasasVencedoras(a, b, c)
-
                 return true
             }
         }
-
         return false
     }
-
-
-
     existeEmpate() {
-
-        for (let casa of casas) {
+        for (let casa of boardCells) {
             if (casa.textContent === '') {
                 return false
             }
         }
-
         return true
     }
 
-
-
-    // ======================================================
-    // FINALIZAÇÃO
-    // ======================================================
-
-
-
     finalizarComVitoria() {
         this.jogoAtivo = false
+        const venceuP1 = this.turno === this.simboloHumano;
         
-        let vencedor;
-        if (this.modo === 'pvp') {
-            vencedor = this.turno === 'X' ? this.jogador1 : this.jogador2;
+        if (venceuP1) {
+            this.vitoriasP1++;
+            this.escrever(`🏆 Vitória de ${this.jogador1}!`);
+            this.vitoriasIA++;
+            this.mostrarModal('vitoria');
         } else {
-            vencedor = this.turno === this.simboloHumano ? this.jogador1 : "IA";
+            this.vitoriasP2++;
+            this.escrever(`🏆 Vitória de ${this.jogador2}!`);
+            this.tentativas--;
+            this.atualizarInterfaceCarreira();
+            this.mostrarModal('derrota');
         }
-
-        this.escrever(`🏆 Vencedor: ${vencedor}`)
+        this.atualizarLabelsPlacar();
+        this.salvarProgresso();
     }
-
-
 
     finalizarComEmpate() {
-
         this.jogoAtivo = false
-
+        this.empates++;
+        this.atualizarLabelsPlacar();
         this.escrever('🤝 Deu empate!')
+        this.tentativas--;
+        this.atualizarInterfaceCarreira();
+        this.mostrarModal('empate');
+        this.salvarProgresso();
     }
-
-
-
-    // ======================================================
-    // AUXILIARES
-    // ======================================================
-
-
-
     alternarTurno() {
-
         this.turno = this.turno === 'X' ? 'O' : 'X'
     }
-
-
-
     mostrarTurnoAtual() {
-        let jogadorAtual;
-        if (this.modo === 'pvp') {
-            jogadorAtual = this.turno === 'X' ? this.jogador1 : this.jogador2;
-        } else {
-            jogadorAtual = this.turno === this.simboloHumano ? this.jogador1 : "IA";
-        }
-
-        this.escrever(`Vez de ${jogadorAtual} (${this.turno})`)
+        const nomeAtual = this.turno === this.simboloHumano ? this.jogador1 : this.jogador2;
+        this.escrever(`Vez de: ${nomeAtual} (${this.turno})`);
     }
-
-
-
     destacarCasasVencedoras(a, b, c) {
-
-        const indices = [a, b, c]
-
-        indices.forEach(indice => {
-            casas[indice].classList.add('vencedora')
+        [a, b, c].forEach(idx => {
+            boardCells[idx].classList.add('vencedora')
         })
     }
-
-
-
     limparTabuleiro() {
-
-        casas.forEach(casa => {
-
+        boardCells.forEach(casa => {
             casa.textContent = ''
-
             casa.classList.remove('vencedora')
         })
     }
-
-
-
     escrever(mensagem) {
-
-        consoleGame.textContent = mensagem
+        statusDisplay.textContent = mensagem
     }
 }
 
-
-
-// ======================================================
-// INICIALIZAÇÃO
-// ======================================================
-
-
-
-new JogoDaVelha()
+window.addEventListener('DOMContentLoaded', () => {
+    new JogoDaVelha();
+});

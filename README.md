@@ -39,7 +39,8 @@ As seguintes tecnologias foram utilizadas na construção do projeto:
 [!CSS3](https://developer.mozilla.org/pt-BR/docs/Web/CSS)
 [!JavaScript](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript)
 [!Node.js](https://nodejs.org/)
-[!Express](https://expressjs.com/)
+[!Express](https://expressjs.com/) 
+[!Firebase](https://firebase.google.com/) - Utilizado para autenticação de usuários (cadastro e login) e como banco de dados NoSQL (Firestore) para persistência do progresso da campanha, configurado com chaves API para segurança.
 [!SQLite](https://www.sqlite.org/)
 
 ## ▶️ Como executar

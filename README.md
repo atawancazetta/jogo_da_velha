@@ -33,15 +33,15 @@ Este projeto foi desenvolvido com o propósito de **exercitar a lógica de progr
 
 ## 🛠️ Tecnologias
 
-As seguintes tecnologias foram utilizadas na construção do projeto:
+As seguintes tecnologias foram utilizadas na construção deste projeto:
 
-[!HTML5](https://developer.mozilla.org/pt-BR/docs/Web/HTML)
-[!CSS3](https://developer.mozilla.org/pt-BR/docs/Web/CSS)
-[!JavaScript](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript)
-[!Node.js](https://nodejs.org/)
-[!Express](https://expressjs.com/) 
-[!Firebase](https://firebase.google.com/) - Utilizado para autenticação de usuários (cadastro e login) e como banco de dados NoSQL (Firestore) para persistência do progresso da campanha, configurado com chaves API para segurança.
-[!SQLite](https://www.sqlite.org/)
+*   🌐 **[HTML5](https://developer.mozilla.org/pt-BR/docs/Web/HTML)**: Estruturação semântica do conteúdo.
+*   🎨 **[CSS3](https://developer.mozilla.org/pt-BR/docs/Web/CSS)**: Estilização e responsividade da interface.
+*   🚀 **[JavaScript](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript)**: Lógica de programação e interatividade do jogo.
+*   🟢 **[Node.js](https://nodejs.org/)**: Ambiente de execução JavaScript no servidor.
+*   ⚡ **[Express](https://expressjs.com/)**: Framework web para o desenvolvimento do backend.
+*   🔥 **[Firebase](https://firebase.google.com/)**: Utilizado para autenticação de usuários (cadastro e login) e como banco de dados NoSQL (Firestore) para persistência do progresso da campanha, configurado com chaves API para segurança.
+*   🗄️ **[SQLite](https://www.sqlite.org/)**: Banco de dados relacional leve para armazenamento local.
 
 ## ▶️ Como executar
 
